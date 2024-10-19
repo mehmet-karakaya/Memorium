@@ -18,23 +18,16 @@ public class Memorium {
         }
     }
 
-    String[] cardList = {
-        "darkness",
-        "double",
-        "fairy",
-        "fighting",
-        "fire",
-        "grass",
-        "lightning",
-        "metal",
-        "psychic",
-        "water"
+    String[] cardLists = {
+        "Pokémon Cards",
+        "Windows"
     };
 
     int rows = 4;
     int columns = 5;
-    int cardWidth = 90;
-    int cardHeight = 128;
+    int deckSize = (rows * columns) / 2;//(4*5)/2=10
+    int cardWidth = 140;
+    int cardHeight = 200;
 
     ArrayList<Card> cardSet; //Create a deck of cards
     ImageIcon cardBackImageIcon;
@@ -48,6 +41,7 @@ public class Memorium {
     JPanel boardPanel = new JPanel();
     JPanel restartGamePanel = new JPanel();
     JButton restartButton = new JButton();
+    JComboBox cardSetsBox = new JComboBox(cardLists);
 
     int errorCount = 0;
     ArrayList<JButton> board;
@@ -55,6 +49,7 @@ public class Memorium {
     boolean gameReady = false;
     JButton card1Selected;
     JButton card2Selected;
+    String deckName = "Pokémon Cards";
 
     Memorium() {
         setupCards();
@@ -121,7 +116,7 @@ public class Memorium {
         //Restart Game Button
         restartButton.setFont(new Font("Arial", Font.PLAIN, 16));
         restartButton.setText("Restart Game");
-        restartButton.setPreferredSize(new Dimension(boardWidth, 30));
+        restartButton.setPreferredSize(new Dimension(boardWidth/2, 30));
         restartButton.setFocusable(false);
         restartButton.setEnabled(false);
         restartButton.addActionListener(new ActionListener() {
@@ -134,6 +129,7 @@ public class Memorium {
                 restartButton.setEnabled(false);
                 card1Selected = null;
                 card2Selected = null;
+                deckName = String.valueOf(cardSetsBox.getSelectedItem());
                 shuffleCards();
 
                 //Reassign Buttons with new Cards
@@ -146,9 +142,16 @@ public class Memorium {
                 hideCardTimer.start();
             }
         });
+        restartGamePanel.setLayout(new GridLayout(1, 2));
         restartGamePanel.add(restartButton);
-        frame.add(restartGamePanel, BorderLayout.SOUTH);
 
+        //Card Sets List Box
+        cardSetsBox.setFont(new Font("Arial", Font.PLAIN, 16));
+        cardSetsBox.setPreferredSize(new Dimension(boardWidth/2, 30));
+        cardSetsBox.setFocusable(false);
+        cardSetsBox.setEnabled(false);
+        restartGamePanel.add(cardSetsBox);
+        frame.add(restartGamePanel, BorderLayout.SOUTH);
 
         frame.pack();
         frame.setVisible(true);
@@ -167,23 +170,24 @@ public class Memorium {
 
     void setupCards() {
         cardSet = new ArrayList<Card>();
-        for (String cardName : cardList) {
+        for (int i = 0; i < deckSize; i++) {
             //Load Each Card Image
-            Image cardImg = new ImageIcon(getClass().getResource("./img/pokemon_cards/" + cardName + ".jpg")).getImage();
+            Image cardImg = new ImageIcon(getClass().getResource("./img/" + deckName + "/" + i + ".jpg")).getImage();
             ImageIcon cardImageIcon = new ImageIcon(cardImg.getScaledInstance(cardWidth, cardHeight, java.awt.Image.SCALE_SMOOTH));
             
             // Create Card Object and the Card Deck
-            Card card = new Card(cardName, cardImageIcon);
+            Card card = new Card(Integer.toString(i), cardImageIcon);
             cardSet.add(card);
         }
         cardSet.addAll(cardSet); //Make each card a couple
 
         //Load Back Image for each Card
-        Image cardBackImg = new ImageIcon(getClass().getResource("./img/pokemon_cards/back.jpg")).getImage();
+        Image cardBackImg = new ImageIcon(getClass().getResource("./img/" + deckName + "/back.jpg")).getImage();
         cardBackImageIcon = new ImageIcon(cardBackImg.getScaledInstance(cardWidth, cardHeight, java.awt.Image.SCALE_SMOOTH));
     }
 
     void shuffleCards() {
+        setupCards();
         //Shuffle
         for (int i = 0; i < cardSet.size(); i++) {
             int j = (int)(Math.random() * cardSet.size());
@@ -192,7 +196,6 @@ public class Memorium {
             cardSet.set(i, cardSet.get(j));
             cardSet.set(j, temp);
         }
-        System.out.println(cardSet);
     }
 
     void hideCards() {
@@ -207,6 +210,7 @@ public class Memorium {
             }
             gameReady = true;
             restartButton.setEnabled(true);
+            cardSetsBox.setEnabled(true);
         }
     }
 }
