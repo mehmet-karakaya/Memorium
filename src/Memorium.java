@@ -41,7 +41,7 @@ public class Memorium {
     JPanel boardPanel = new JPanel();
     JPanel restartGamePanel = new JPanel();
     JButton restartButton = new JButton();
-    JComboBox cardSetsBox = new JComboBox(cardLists);
+    JComboBox<String> cardSetsBox = new JComboBox<String>(cardLists);
 
     int errorCount = 0;
     ArrayList<JButton> board;
